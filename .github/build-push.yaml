@@ -1,0 +1,61 @@
+name: Build and push docker iamge
+
+on:
+  workflow_call:
+    inputs:
+      aws_region:
+        default: ap-southeast-1
+        type: string
+      role-to-assume:
+        default: arn:aws:iam::348129557613:role/github-oidc-provider-aws
+        type: string
+      service: 
+        default: default-service # will override by the caller
+        type: string
+      aws-ecr:
+        default: 348129557613.dkr.ecr.ap-southeast-1.amazonaws.com
+        type: string
+      docker-tag:
+        default: latest # will override by the caller
+        type: string
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # use AssumeRoleWithWebIdentity to assume role
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ github.event.inputs.aws_region }}
+          role-to-assume: ${{ github.event.inputs.role-to-assume }}
+      
+      - name: Tag Docker image with datetime format
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ github.event.inputs.aws-ecr }}/${{ github.event.inputs.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha 
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v26
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
