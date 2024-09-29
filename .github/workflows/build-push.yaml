@@ -9,6 +9,9 @@ on:
       role-to-assume:
         default: arn:aws:iam::348129557613:role/github-oidc-provider-aws
         type: string
+      service: 
+        default: default-service # will override by the caller
+        type: string
       aws-ecr:
         default: 348129557613.dkr.ecr.ap-southeast-1.amazonaws.com
         type: string
