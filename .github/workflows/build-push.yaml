@@ -68,3 +68,35 @@ jobs:
           builder: mybuilder
           cache-from: type=registry,ref=${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:cache
           cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:cache
+      
+      - name: Prepare values for dispatch
+        id: prepare
+        env:
+          DOCKER_METADATA: ${{ steps.meta.outputs.json}}
+        run: |
+          echo "repo=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
+          echo "service=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
+          echo "repository=morpheuslabs-io/argocd-apps" >> $GITHUB_OUTPUT
+          echo "event-type=deploy-prod" >> $GITHUB_OUTPUT
+
+          # pretty print the metadata
+          echo $DOCKER_METADATA | jq '.'
+
+          # get the image tag contains 'v'
+          image_tag=$(echo "$DOCKER_METADATA" | jq -r '.tags[] | select(. | test("v"))')
+          echo $image_tag >> $GITHUB_OUTPUT
+          # trigger
+      
+
+      - name: Deploy dispatch
+        uses: peter-evans/repository-dispatch@v2.1.2
+        with:
+          token: ${{ secrets.ORG_CI_TOKEN }}
+          repository: ${{ steps.prepare.outputs.repository }}
+          event-type: ${{ steps.prepare.outputs.event-type }}
+          client-payload: |-
+            {
+            "repo": "${{ steps.prepare.outputs.repo }}",
+            "service": "${{ steps.prepare.outputs.service }}",
+            "image_tag": "${{ steps.prepare.outputs.image_tag }}"
+            }
