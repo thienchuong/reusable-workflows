@@ -9,9 +9,6 @@ on:
       role-to-assume:
         default: arn:aws:iam::348129557613:role/github-oidc-provider-aws
         type: string
-      service: 
-        default: default-service # will override by the caller
-        type: string
       aws-ecr:
         default: 348129557613.dkr.ecr.ap-southeast-1.amazonaws.com
         type: string
@@ -43,7 +40,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ inputs.aws-ecr }}:${{ github.event.inputs.service }}
+            ${{ inputs.aws-ecr }}/${{ github.event.repository.name }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
