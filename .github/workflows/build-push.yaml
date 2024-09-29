@@ -83,10 +83,8 @@ jobs:
           echo $DOCKER_METADATA | jq '.'
 
           # get the image tag contains 'v'
-          image_tag=$(echo "$DOCKER_METADATA" | jq -r '.tags[] | select(startswith("${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:v")) | split(":")[1]')
-          echo $image_tag >> $GITHUB_OUTPUT
-          # trigger
-      
+          imagetag=$(echo "$DOCKER_METADATA" | jq -r '.tags[] | select(startswith("${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:v")) | split(":")[1]')
+          echo "image_tag=$imagetag" >> $GITHUB_OUTPUT
 
       - name: Deploy dispatch
         uses: peter-evans/repository-dispatch@v2.1.2
