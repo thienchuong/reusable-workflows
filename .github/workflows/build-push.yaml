@@ -43,7 +43,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ inputs.aws-ecr }}/${{ github.event.inputs.service }}
+            ${{ inputs.aws-ecr }}:${{ github.event.inputs.service }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
