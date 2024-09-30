@@ -7,7 +7,7 @@ on:
         default: ap-southeast-1
         type: string
       role-to-assume:
-        default: arn:aws:iam::348129557613:role/github-oidc-provider-aws
+        default: arn:aws:iam::214259409527:role/github-oidc-provider-aws
         type: string
       aws-ecr:
         default: 348129557613.dkr.ecr.ap-southeast-1.amazonaws.com
