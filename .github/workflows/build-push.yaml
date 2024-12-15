@@ -71,7 +71,7 @@ jobs:
           cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:cache
       
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.2.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: ${{ steps.docker_build.outputs.imageid }}
           format: 'json'
