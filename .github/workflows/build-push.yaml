@@ -60,6 +60,7 @@ jobs:
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v6.8.0
+        id: docker_build
         with:
           context: .
           file: ./Dockerfile
@@ -68,6 +69,17 @@ jobs:
           builder: mybuilder
           cache-from: type=registry,ref=${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:cache
           cache-to: type=registry,mode=max,image-manifest=true,oci-mediatypes=true,ref=${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:cache
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.2.0
+        with:
+          image-ref: ${{ steps.docker_build.outputs.imageid }}
+          format: 'json'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'MEDIUM'
+        continue-on-error: true
       
       - name: Prepare values for dispatch
         id: prepare
