@@ -101,29 +101,29 @@ jobs:
       - name: Deploy dispatch for main app
         uses: peter-evans/repository-dispatch@v2.1.2
         # if contains 'v' or 'dev' or 'stg' in the image tag, then deploy to prod
-        if: contains(steps.prepare.outputs.image_tag, 'v') || contains(steps.prepare.outputs.image_tag, 'dev') || contains(steps.prepare.outputs.image_tag, 'stg')
+        if: contains(${{ github.ref_name }}, 'v') || contains(${{ github.ref_name }}, 'dev') || contains(${{ github.ref_name }}, 'stg')
         with:
           token: ${{ secrets.ORG_CI_TOKEN }}
-          repository: ${{ steps.prepare.outputs.repository }}
-          event-type: ${{ steps.prepare.outputs.event-type }}
+          repository: thienchuong/argocd-service
+          event-type: deploy-dev
           client-payload: |-
             {
-            "repo": "${{ steps.prepare.outputs.repo }}",
-            "service": "${{ steps.prepare.outputs.service }}",
-            "image_tag": "${{ steps.prepare.outputs.image_tag }}"
+            "repo": "${{ github.event.repository.name }}",
+            "service": "${{ github.event.repository.name }}",
+            "image_tag": "${{ github.ref_name }}"
             }
 
       - name: Deploy dispatch for canary app
         uses: peter-evans/repository-dispatch@v2.1.2
         # if contains 'canary' in the image tag, then deploy to canary
-        if: contains(steps.prepare.outputs.image_tag, 'canary')
+        if: contains(${{ github.ref_name }}, 'canary')
         with:
           token: ${{ secrets.ORG_CI_TOKEN }}
-          repository: ${{ steps.prepare.outputs.repository }}
+          repository: thienchuong/argocd-service
           event-type: deploy-canary
           client-payload: |-
             {
-            "repo": "${{ steps.prepare.outputs.repo }}",
-            "service": "${{ steps.prepare.outputs.service }}",
-            "image_tag": "${{ steps.prepare.outputs.image_tag }}"
+            "repo": "${{ github.event.repository.name }}",
+            "service": "${{ github.event.repository.name }}",
+            "image_tag": "${{ github.ref_name }}"
             }
