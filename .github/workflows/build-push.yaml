@@ -74,7 +74,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: ${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:${{ github.ref_name }}
-          format: 'json'
+          format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
