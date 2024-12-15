@@ -7,10 +7,10 @@ on:
         default: ap-southeast-1
         type: string
       role-to-assume:
-        default: arn:aws:iam::214259409527:role/github-oidc-provider-aws
+        required: true
         type: string
       aws-ecr:
-        default: 214259409527.dkr.ecr.ap-southeast-1.amazonaws.com
+        required: true
         type: string
       docker-tag:
         default: latest # will override by the caller
@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "repo=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
           echo "service=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
-          echo "repository=thienchuong/argocd-app" >> $GITHUB_OUTPUT
+          echo "repository=thienchuong/argocd-service" >> $GITHUB_OUTPUT
           echo "event-type=deploy-prod" >> $GITHUB_OUTPUT
 
           # pretty print the metadata
