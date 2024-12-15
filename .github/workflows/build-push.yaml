@@ -80,23 +80,6 @@ jobs:
           vuln-type: 'os,library'
           severity: 'MEDIUM'
         continue-on-error: true
-      
-      - name: Prepare values for dispatch
-        id: prepare
-        env:
-          DOCKER_METADATA: ${{ steps.meta.outputs.json}}
-        run: |
-          echo "repo=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
-          echo "service=${GITHUB_REPOSITORY#*/}" >> $GITHUB_OUTPUT
-          echo "repository=thienchuong/argocd-service" >> $GITHUB_OUTPUT
-          echo "event-type=deploy-prod" >> $GITHUB_OUTPUT
-
-          # pretty print the metadata
-          echo $DOCKER_METADATA | jq '.'
-
-          # get the image tag contains 'v'
-          imagetag=$(echo "$DOCKER_METADATA" | jq -r '.tags[] | select(startswith("${{ inputs.aws-ecr }}/${{ github.event.repository.name }}:v")) | split(":")[1]')
-          echo "image_tag=$imagetag" >> $GITHUB_OUTPUT
 
       - name: Deploy dispatch for main app
         uses: peter-evans/repository-dispatch@v2.1.2
