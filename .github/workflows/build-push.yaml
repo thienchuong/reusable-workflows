@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Lint and Test
+      - name: Test
         run: npm test
 
   build_and_push:
